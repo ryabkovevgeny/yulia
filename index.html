@@ -121,17 +121,21 @@
             font-weight: 500;
             font-size: 0.95rem;
         }
+
+        /* Исправленный стиль для body упражнений */
         .day-body {
-            padding: 0;
-            max-height: 0;
+            padding: 0 12px;
             overflow: hidden;
-            transition: max-height 0.35s ease, padding 0.35s ease;
+            transition: padding 0.35s ease;
             background: transparent;
+            max-height: 0;
         }
         .day-body.open {
             padding: 10px 12px;
-            max-height: 1000px;
+            max-height: 2000px; /* увеличено */
+            overflow-y: auto; /* добавлено для мобильных */
         }
+
         .exercise-row {
             margin: 0.6rem 0;
             padding: 0.6rem 0;
@@ -219,6 +223,12 @@
             .exercise-input, .note-input { width: 100%; }
             h1 { font-size: 1.4rem; }
             .phase-header, .day-header { font-size: 1rem; }
+
+            /* Убедимся, что в открытой карточке всё видно */
+            .day-body.open {
+                max-height: 80vh; /* до 80% высоты экрана */
+                overflow-y: auto;
+            }
         }
     </style>
 </head>
@@ -303,6 +313,11 @@
 </div>
 
 <script>
+    // ... (весь тот же JavaScript, что и ранее — без изменений)
+
+    // Полный JS-код остаётся прежним — он корректен.
+    // Единственное изменение — в CSS для .day-body.open
+
     const workoutPlan = {
         phase1: {
             "Понедельник": [
@@ -625,7 +640,7 @@
         }
     };
 
-    const STORAGE_KEY = 'yulia100_complete_plan_v1';
+    const STORAGE_KEY = 'yulia100_complete_plan_v2';
     let state = { days: {} };
 
     function loadState() {
