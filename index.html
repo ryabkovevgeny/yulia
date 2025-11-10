@@ -5,11 +5,6 @@
     <title>100‑дневный домашний план для Юлии</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <!-- Preload фоновых изображений -->
-    <link rel="preload" as="image" href="images/motiv1.jpg">
-    <link rel="preload" as="image" href="images/motiv2.jpg">
-    <link rel="preload" as="image" href="images/motiv3.jpg">
-
     <style>
         :root{
             --primary:#1976d2;
@@ -31,35 +26,6 @@
             line-height: 1.6;
             color: #333;
             background: var(--bg);
-        }
-
-        .bg-slideshow{
-            position: fixed;
-            inset: 0;
-            z-index: -2;
-            overflow: hidden;
-            background: linear-gradient(120deg, #bbdefb, #90caf9);
-        }
-        .bg-slide{
-            position: absolute;
-            inset: 0;
-            background-size: cover;
-            background-position: center center;
-            filter: saturate(1.05) contrast(1.05) brightness(0.9);
-            opacity: 0;
-            transition: opacity 1.2s ease;
-        }
-        .bg-slide.active{ opacity: 1; }
-        .bg-overlay{
-            position: fixed;
-            inset: 0;
-            z-index: -1;
-            pointer-events: none;
-            background: rgba(0,0,0,0.2);
-            backdrop-filter: blur(1px);
-        }
-        @media (prefers-reduced-motion: reduce){
-            .bg-slide{ transition: none; }
         }
 
         .container {
@@ -241,9 +207,6 @@
 </head>
 <body>
 
-<div id="bg-slideshow" class="bg-slideshow" aria-hidden="true"></div>
-<div class="bg-overlay" aria-hidden="true"></div>
-
 <header>
     <h1>🌊 100‑дневный домашний план для Юлии</h1>
     <nav>
@@ -323,33 +286,6 @@
 </div>
 
 <script>
-    const bgImages = [
-        'images/motiv1.jpg',
-        'images/motiv2.jpg',
-        'images/motiv3.jpg'
-    ];
-    const BG_INTERVAL = 8000;
-    function setupBackgroundSlideshow(){
-        const wrap = document.getElementById('bg-slideshow');
-        if (!wrap) return;
-        bgImages.forEach(src => {
-            const slide = document.createElement('div');
-            slide.className = 'bg-slide';
-            slide.style.backgroundImage = `url("${src}")`;
-            wrap.appendChild(slide);
-        });
-        const slides = wrap.querySelectorAll('.bg-slide');
-        if (slides.length === 0) return;
-        slides.forEach(s => { const img = new Image(); img.src = s.style.backgroundImage.slice(5, -2); });
-        let i = 0;
-        slides[i].classList.add('active');
-        setInterval(() => {
-            slides[i].classList.remove('active');
-            i = (i + 1) % slides.length;
-            slides[i].classList.add('active');
-        }, BG_INTERVAL);
-    }
-
     const workoutPlan = {
         phase1: {
             "Понедельник": [
@@ -361,8 +297,16 @@
                 "Пилатес для спины — «Swan» лёжа (3×8)"
             ],
             "Среда": [
-                "Йога для начинающих: «Здоровая спина» (30–40 мин)",
-                "Дыхательные упражнения (5 мин)"
+                "Дыхание диафрагмой лёжа (5 мин)",
+                "Кошка–корова (Cat-Cow) на четвереньках (3 мин)",
+                "Детская поза — модифицированная (2 мин)",
+                "Повороты лёжа на спине (Supine Twist) (3 мин)",
+                "Мостик — лёгкий вариант (3 мин)",
+                "Поза «Стол» с вытяжением (2 мин)",
+                "Сфинкс — лёжа на животе (3 мин)",
+                "Сидячая скручивающаяся поза — модифицированная (4 мин)",
+                "Растяжка грудных мышц у дверного проёма (2 мин)",
+                "Шавасана с поддержкой (5 мин)"
             ],
             "Четверг": [
                 "Эллипсоид или ходьба (30 мин)",
@@ -387,8 +331,14 @@
                 "Удержание позы «стол» (3×20 сек)"
             ],
             "Среда": [
-                "Йога: «Гибкость и осанка» (40 мин)",
-                "Медитация или визуализация (10 мин)"
+                "Дыхание диафрагмой (5 мин)",
+                "Мягкая растяжка шеи и плеч (5 мин)",
+                "Кошка–корова с паузой в нейтральном положении (3 мин)",
+                "Мостик с поднятой ногой (3×8 на ногу)",
+                "Супермен лёжа (3×10)",
+                "Повороты сидя на стуле (3×30 сек на сторону)",
+                "Боковая растяжка сидя (2×30 сек)",
+                "Шавасана с подушкой под коленями (7 мин)"
             ],
             "Четверг": [
                 "Кардио-танцы без прыжков (30 мин)",
@@ -412,8 +362,14 @@
                 "Планка с опорой на локти (3×30 сек)"
             ],
             "Среда": [
-                "Йога: «Баланс и спокойствие» (45 мин)",
-                "Прогулка на свежем воздухе (20 мин)"
+                "Дыхание 4-7-8 (5 мин)",
+                "Растяжка шеи и трапеций (5 мин)",
+                "Кошка–корова с вращением плеч (3 мин)",
+                "Мостик с резинкой выше колен (3×12)",
+                "Супермен с задержкой (3×15 сек)",
+                "Скручивание на стуле с поворотом (3×20 сек на сторону)",
+                "Боковая растяжка стоя (2×30 сек)",
+                "Медитация лёжа (10 мин)"
             ],
             "Четверг": [
                 "Низкоударное кардио (танцы/эллипс) — 35 мин",
@@ -479,11 +435,12 @@
 
     function ensureDayState(day, exerciseCount) {
         if (!state.days[day]) {
-            state.days[day] = { completed: false, entries: Array(exerciseCount).fill({w:'', n:''}) };
+            state.days[day] = { completed: false, entries: Array.from({length: exerciseCount}, () => ({w:'', n:''})) };
         } else {
             const current = state.days[day].entries || [];
             if (current.length !== exerciseCount) {
-                state.days[day].entries = Array.from({length: exerciseCount}, (_, i) => current[i] || {w:'', n:''});
+                const next = Array.from({length: exerciseCount}, (_, i) => current[i] || {w:'', n:''});
+                state.days[day].entries = next;
             }
         }
     }
@@ -581,10 +538,7 @@
 
                     const weightInput = document.createElement('input');
                     weightInput.className = 'exercise-input';
-                    weightInput.type = 'number';
-                    weightInput.inputMode = 'decimal';
-                    weightInput.min = '0';
-                    weightInput.step = '0.5';
+                    weightInput.type = 'text';
                     weightInput.placeholder = 'повт/время';
                     weightInput.value = state.days[day].entries[idx]?.w || '';
                     weightInput.addEventListener('input', () => {
@@ -618,7 +572,6 @@
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-        setupBackgroundSlideshow();
         loadState();
         generateDays('phase1', 1, 30, 'phase1-body');
         generateDays('phase2', 31, 70, 'phase2-body');
