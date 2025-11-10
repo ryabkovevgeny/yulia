@@ -518,26 +518,6 @@
         return { weekDay, rest: false, exercises: normalized };
     }
 
-    function ensureDayState(day, exerciseCount) {
-        if (!state.days[day]) {
-            state.days[day] = { completed: false, entries: Array.from({length: exerciseCount}, () => ({w:'', n:''})) };
-        } else {
-            const current = state.days[day].entries || [];
-            if (current.length !== exerciseCount) {
-                const next = Array.from({length: exerciseCount}, (_, i) => current[i] || {w:'', n:''});
-                state.days[day].entries = next;
-            }
-        }
-    }
-
-    function updateProgressUI() {
-        const completed = Object.values(state.days).filter(d => d.completed).length;
-        const percent = Math.min(100, Math.round((completed / 100) * 100));
-        document.getElementById('completed-days').textContent = completed;
-        document.getElementById('progress-fill').style.width = percent + '%';
-        document.getElementById('progress-text').textContent = percent + '% выполнено';
-    }
-
     function togglePhase(el) {
         const body = el.nextElementSibling;
         const arrow = el.querySelector('.arrow');
@@ -562,7 +542,35 @@
             const { weekDay, rest, exercises } = getDayPlan(day, phaseName);
             const exerciseCount = rest ? 0 : exercises.length;
 
-            ensureDayState(day, exerciseCount);
+            // Инициализация состояния дня с подстановкой описаний по умолчанию
+            if (!state.days[day]) {
+                state.days[day] = {
+                    completed: false,
+                    entries: exercises.map(ex => ({ w: '', n: ex.note || '' }))
+                };
+            } else {
+                // Убедимся, что количество записей совпадает
+                const current = state.days[day].entries || [];
+                if (current.length !== exerciseCount) {
+                    state.days[day].entries = Array.from({length: exerciseCount}, (_, i) => {
+                        const saved = current[i] || {w: '', n: ''};
+                        // Если заметка пустая и есть описание по умолчанию — подставим его
+                        const defaultNote = exercises[i]?.note || '';
+                        return {
+                            w: saved.w,
+                            n: saved.n !== '' ? saved.n : defaultNote
+                        };
+                    });
+                } else {
+                    // Обновим пустые заметки на описания по умолчанию (если они не были изменены)
+                    for (let i = 0; i < exerciseCount; i++) {
+                        if (state.days[day].entries[i].n === '' && exercises[i]?.note) {
+                            state.days[day].entries[i].n = exercises[i].note;
+                        }
+                    }
+                }
+            }
+
             const dayState = state.days[day];
 
             const card = document.createElement('div');
@@ -636,8 +644,7 @@
                     noteInput.className = 'note-input';
                     noteInput.type = 'text';
                     noteInput.placeholder = 'заметка / описание';
-                    noteInput.value = state.days[day].entries[idx]?.n !== undefined ? 
-                        state.days[day].entries[idx].n : exercise.note;
+                    noteInput.value = state.days[day].entries[idx]?.n || '';
                     noteInput.addEventListener('input', () => {
                         state.days[day].entries[idx] = state.days[day].entries[idx] || {w:'', n:''};
                         state.days[day].entries[idx].n = noteInput.value;
@@ -655,6 +662,14 @@
             card.appendChild(body);
             container.appendChild(card);
         }
+    }
+
+    function updateProgressUI() {
+        const completed = Object.values(state.days).filter(d => d.completed).length;
+        const percent = Math.min(100, Math.round((completed / 100) * 100));
+        document.getElementById('completed-days').textContent = completed;
+        document.getElementById('progress-fill').style.width = percent + '%';
+        document.getElementById('progress-text').textContent = percent + '% выполнено';
     }
 
     document.addEventListener('DOMContentLoaded', () => {
